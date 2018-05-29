@@ -3,6 +3,13 @@ import model
 
 app = Flask(__name__)
 
+
+@app.route("/admin")
+def administrator():
+    ## edit posts
+    return render_template("admin.html", entries=model.get_entries())
+
+
 @app.route("/")
 def index():
     ## print the guestbook
@@ -20,6 +27,12 @@ def postentry():
     model.add_entry(name, message)
     return redirect("/")
 
+@app.route("/delete", methods=["POST"])
+def delete():
+    id_to_delete = request.form["id"]
+    model.delete_entry(id_to_delete)
+    return redirect("/")
+
 if __name__=="__main__":
-    model.init()
+    model.init(app)
     app.run(debug=True)

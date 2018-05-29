@@ -20,11 +20,32 @@ def get_entries():
     global entries
     return entries
 
+
+def delete_entry(id_to_delete):
+    global entries, GUESTBOOK_ENTRIES_FILE
+    entries[:] = [d for d in entries if d.get('id') != id_to_delete]
+    
+    try:
+        f = open(GUESTBOOK_ENTRIES_FILE, "w")
+        dump_string = json.dumps(entries)
+        f.write(dump_string)
+        f.close()
+    except:
+        print("ERROR! Could not write entries to file.")
+
+
 def add_entry(name, text):
     global entries, GUESTBOOK_ENTRIES_FILE
     now = datetime.now()
+    global next_id
+    
+    if entries:
+        next_id = int(entries[0]['id']) + 1
+    else: 
+        next_id = 0
     time_string = now.strftime("%b %d, %Y %-I:%M %p")
-    entry = {"author": name, "text": text, "timestamp": time_string}
+    entry = {"author": name, "text": text, "timestamp": time_string, "id": str(next_id)}
+    
     entries.insert(0, entry) ## add to front of list
     try:
         f = open(GUESTBOOK_ENTRIES_FILE, "w")
